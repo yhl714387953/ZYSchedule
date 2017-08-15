@@ -217,6 +217,13 @@
                       successBlock:(void(^)(NSMutableDictionary* data))successBlock
                       failureBlock:(void(^)(id msg, ERequestState state))failureBlock{
 
+    BOOL useLocalData = [[NSUserDefaults standardUserDefaults] boolForKey:@"useLocalData"];
+    if (useLocalData) {
+        if(successBlock) successBlock([self forgeDataSource1]);
+        
+        return;
+    }
+    
 //    kLSBaseURL = @"hangyanBaseUrl";
     NSString* url = @"lschedule_xinmei/draSchedule.do";
     

@@ -1,99 +1,94 @@
 {
     "schedule": [
-    {
-        "smsContent": "",
-        "remark": "",
-        "smsType": 0,
-        "leadersId": "13946709792911646768699192320654,13946711535570236005531181935216,7745829,13946711635570236005531181935216,13946712241508084682667760927870",
-        "creatorId": "",
-        "pid": "",
-        "creatTime": "2017-04-28 00:00:00.0",
-        "endTime": "2017-05-02 10:00:00.0",
-        "type": "0",
-        "leaders": "  ´÷ÖÒ  ÍõÐ¡½Ü  ÑîÁÖ  Îº±ù  ·½Á¦",
-        "noId": "ef8b9c89564ac215015bb2982fe403bd",
-        "creator": "½¯ÒàÎ°",
-        "modifier": "",
-        "startTime": "2017-05-02 09:00:00.0",
-        "holiday": "0",
-        "content": "·Ö¹«Ë¾Áìµ¼ÅöÍ·»á",
-        "modifierId": "",
-        "address": "1111»áÒéÊÒ",
-        "pending": "1"
-    },
-    {
-        "smsContent": "",
-        "remark": "",
-        "smsType": 0,
-        "leadersId": "13946709792911646768699192320654,13946711535570236005531181935216,7745829,13946711635570236005531181935216,13946712241508084682667760927870",
-        "creatorId": "",
-        "pid": "",
-        "creatTime": "2017-04-28 00:00:00.0",
-        "endTime": "2017-05-02 11:00:00.0",
-        "type": "0",
-        "leaders": "  ´÷ÖÒ  ÍõÐ¡½Ü  ÑîÁÖ  Îº±ù  ·½Á¦",
-        "noId": "ef8b9c89564ac215015bb38fe6d903c2",
-        "creator": "½¯ÒàÎ°",
-        "modifier": "",
-        "startTime": "2017-05-02 10:00:00.0",
-        "holiday": "0",
-        "content": "·Ö¹«Ë¾µ³Î¯»á",
-        "modifierId": "",
-        "address": "1111»áÒéÊÒ",
-        "pending": "1"
-    }
-    ],
+                 {
+                 "content": "你猜",
+                 "creatTime": "2017-05-25 11:08:33",
+                 "creator": "刘备",
+                 "creatorId": 9949021,
+                 "dateModify": "2017-05-25 11:08:33.0",
+                 "endTime": "2017-08-31 02:00:00",
+                 "holiday": 0,
+                 "noId": "402881855c3d74af015c3d93c622000c",
+                 "pending": 0,
+                 "remark": "",
+                 "startTime": "2017-08-31 05:00:00",
+                 "type": 0
+                 },
+                 {
+                 "content": "你猜",
+                 "creatTime": "2017-05-25 11:08:33",
+                 "creator": "刘备",
+                 "creatorId": 9949021,
+                 "dateModify": "2017-05-25 11:08:33.0",
+                 "endTime": "2017-08-31 02:00:00",
+                 "holiday": 0,
+                 "noId": "402881855c3d74af015c3d93c622000c",
+                 "pending": 1,
+                 "remark": "",
+                 "startTime": "2017-08-31 05:00:00",
+                 "type": 0
+                 }
+                 ],
     "holidays": "2017-09-24,2015-11-15,2017-09-30,2015-11-21,2017-10-01,2014-06-29,2015-11-22,2017-10-07,2015-11-28,2017-10-08,2015-11-29,2017-10-14,2015-12-05,2017-10-15,2015-12-06,2017-10-21,2015-12-12,2017-10-22,2015-12-13,2017-10-28,2015-12-19,2017-10-29,2015-12-20,2017-11-04,2015-12-26,2017-11-05,2014-05-02,2015-12-27,2017-11-11,2015-09-03,2017-11-12,2016-01-03,2017-11-18,2016-01-09,2017-11-19,2016-01-10,2017-11-25,2016-01-16,2017-11-26,2016-01-17,2017-12-02,2016-01-23,2017-12-03,2016-01-24,2017-12-09",
     "leaders": [
-    {
-        "loginname": "daizhong",
-        "Email": "daizhong@chinamobile.com",
-        "userId": "13946709792911646768699192320654",
-        "name": "赵云",
-        "role": "2",
-        "mobile": "13801158313"
-    },
-    {
-        "loginname": "wangxiaojie",
-        "Email": "wangxiaojie@chinamobile.com",
-        "userId": "13946711535570236005531181935216",
-        "name": "关羽",
-        "role": "2",
-        "mobile": "13901390989"
-    },
-    {
-        "loginname": "yanglin1",
-        "Email": "yanglin@chinamobile.com",
-        "userId": "7745829",
-        "name": "张飞",
-        "role": "2",
-        "mobile": "13910822286"
-    },
-    {
-        "loginname": "weibing",
-        "Email": "weibing@chinamobile.com",
-        "userId": "13946711635570236005531181935216",
-        "name": "黄忠",
-        "role": "2",
-        "mobile": "13511068362"
-    },
-    {
-        "loginname": "fangli",
-        "Email": "fangli@chinamobile.com",
-        "userId": "13946712241508084682667760927870",
-        "name": "马超",
-        "role": "2",
-        "mobile": "13910822266"
-    }
-    ],
+                {
+                "Email": "zhaoyun@sanguo.com",
+                "color": "#3a1772",
+                "loginname": "zhaoyun",
+                "mobile": "13889098760",
+                "name": "赵云",
+                "role": "2",
+                "sort": "1",
+                "userId": "646768699192320650"
+                },
+                {
+                "Email": "guanyu@sanguo.com",
+                "color": "#1c77c3",
+                "loginname": "guanyu",
+                "mobile": "13889098798",
+                "name": "关羽",
+                "role": "2",
+                "sort": "2",
+                "userId": "646768699192320651"
+                },
+                {
+                "Email": "zhangfei@sanguo.com",
+                "color": "#eac435",
+                "loginname": "zhangfei",
+                "mobile": "13889065798",
+                "name": "张飞",
+                "role": "2",
+                "sort": "3",
+                "userId": "646768699192320652"
+                },
+                {
+                "Email": "huangzhong@sanguo.com",
+                "color": "#d61481",
+                "loginname": "huangzhong",
+                "mobile": "13886065328",
+                "name": "黄忠",
+                "role": "2",
+                "sort": "4",
+                "userId": "646768699192320653"
+                },
+                {
+                "Email": "machao@sanguo.com",
+                "color": "#d61481",
+                "loginname": "machao",
+                "mobile": "13886068758",
+                "name": "马超",
+                "role": "2",
+                "sort": "5",
+                "userId": "646768699192320654"
+                }
+                ],
     "user": [
-    {
-        "loginname": "caizhenhua",
-        "Email": "caizhenhua@chinamobile.com",
-        "userId": "13946714992131068017950087808654",
-        "name": "²ÌÕñ»ª",
-        "role": "1",
-        "mobile": "13801117997"
-    }
-    ]
+             {
+             "loginname": "liubei",
+             "userId": "646768699192320666",
+             "name": "刘备",
+             "role": "1",
+             "mobile": "13688886666"
+             }
+             ]
 }

@@ -21,6 +21,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.textField.text = @"13688886666";
+    
+    //启用本地数据
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"useLocalData"];
+    
     [self initShake];
     // Do any additional setup after loading the view, typically from a nib.
 }
