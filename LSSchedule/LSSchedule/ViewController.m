@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "LSNavigationController.h"
 #import "LSModel.h"
+#import "LSAgendaModel.h"
 #import "LSCooCalendarViewController.h"
 
 @interface ViewController ()
@@ -24,7 +25,7 @@
     self.textField.text = @"13688886666";
     
     //启用本地数据
-    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"useLocalData"];
+    kUseLocalData = YES;
     
     [self initShake];
     // Do any additional setup after loading the view, typically from a nib.

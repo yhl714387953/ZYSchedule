@@ -9,6 +9,10 @@
 #import "LSAgendaModel.h"
 #import "LSUtils.h"
 #import "MJExtension.h"
+#import <CommonCrypto/CommonDigest.h>
+
+/** 是否启用本地数据库 */
+BOOL kUseLocalData = NO;
 
 @implementation LSAgendaModel
 
@@ -216,9 +220,8 @@
                            endTime:(NSTimeInterval)endTime
                       successBlock:(void(^)(NSMutableDictionary* data))successBlock
                       failureBlock:(void(^)(id msg, ERequestState state))failureBlock{
-
-    BOOL useLocalData = [[NSUserDefaults standardUserDefaults] boolForKey:@"useLocalData"];
-    if (useLocalData) {
+    
+    if (kUseLocalData) {
         if(successBlock) successBlock([self forgeDataSource1]);
         
         return;
@@ -250,6 +253,99 @@
 
 }
 
+//新增或者修改日程   当id存在的时候就是修改
++(void)asyncUpdateAgendaInfo:(LSAgendaModel*)model
+                successBlock:(void(^)(id data))successBlock
+                failureBlock:(void(^)(id msg, ERequestState state))failureBlock{
+    
+    
+    //    kLSBaseURL = @"hangyanBaseUrl";
+    NSString* url = @"lschedule_xinmei/draSchedule.do";
+    NSMutableDictionary* params = [NSMutableDictionary dictionaryWithDictionary:[model getAllPropertyKeyValues]];
+    
+    //修改还是更新
+    if (model.noId) {
+        params[@"type"] = @"update";
+        params[@"id"] = model.noId;
+        [params removeObjectForKey:@"agendaId"];
+    }else{
+        params[@"type"] = @"add";
+    }
+    //固定参数
+    params[@"draType"] = @"dra-ajax";
+    params[@"cmd"] = @"addorUpdateSchedule";
+    params[@"isHoliday"] = @(model.holiday);
+    
+    //创建人ID
+    LSUser* user = [LSUser currentUser];
+    params[@"creator"] = [NSString stringWithFormat:@"%@", user.name];
+    params[@"creatorId"] = [NSString stringWithFormat:@"%@", user.userId];
+    
+    //开始时间
+    NSDate* startDate = [LSUtils serverDateFromString:model.startTime];
+    if (!startDate) {//如果不是服务器的时间格式，那么用我们自己的时间格式化
+        startDate = [LSUtils dateFormString:model.startTime format:@"yyyy-MM-dd HH:mm:ss"];
+    }
+    params[@"startTime"] = @([startDate timeIntervalSince1970] * 1000);// @"1493946000000";
+    
+    //结束时间
+    NSDate* endDate = [LSUtils serverDateFromString:model.endTime];
+    if (!endDate) {//如果不是服务器的时间格式，那么用我们自己的时间格式化
+        endDate = [LSUtils dateFormString:model.endTime format:@"yyyy-MM-dd HH:mm:ss"];
+    }
+    params[@"endTime"] = @([endDate timeIntervalSince1970] * 1000);// @"1493978400000";
+    
+    if (!model.leaders || model.leaders.length == 0) {
+        params[@"leaders"] = @"";
+        params[@"leadersId"] = @"";
+        params[@"pending"] = @"0";
+    }else{
+        params[@"pending"] = @"1";
+    }
+    
+    
+    if (kUseLocalData) {
+        [self localSaveModel:model params:params];
+        if(successBlock) successBlock(@"create_or_update_success");
+        
+        return;
+    }
+    
+    
+    [self asyncPostUrl:url param:params successBlock:^(id resObj) {
+        
+        [self parserAndSaveAgenda:resObj[@"schedule"]];
+        
+        if(successBlock)successBlock(resObj);
+    } failureBlock:^(id msg, ERequestState state) {
+        if(failureBlock) failureBlock(msg, state);
+    }];
+}
+
+//删除日程
++(void)asyncDeleteAgendaById:(NSString*)agendaId
+                successBlock:(void(^)(id data))successBlock
+                failureBlock:(void(^)(id msg, ERequestState state))failureBlock{
+    
+    if (kUseLocalData) {
+        if(successBlock) successBlock(@"delete_success");
+        
+        return;
+    }
+    //    kLSBaseURL = @"hangyanBaseUrl";
+    NSString* url = @"lschedule_xinmei/draSchedule.do";
+    NSMutableDictionary* params = [NSMutableDictionary dictionary];
+    params[@"draType"] = @"dra-ajax";
+    params[@"cmd"] = @"deleteSchedule";
+    params[@"id"] = agendaId;
+    
+    [self asyncPostUrl:url param:params successBlock:^(id resObj) {
+        if(successBlock)successBlock(resObj);
+    } failureBlock:^(id msg, ERequestState state) {
+        if(failureBlock) failureBlock(msg, state);
+    }];
+}
+
 //读取一波假数据，因为接口还没对上
 +(NSMutableDictionary*)forgeDataSource1{
     NSString* path = [[NSBundle mainBundle] pathForResource:@"TempData" ofType:@".json"];
@@ -265,6 +361,9 @@
     return [self parserServerData:originInfo];
 }
 
+
+#pragma mark -
+#pragma mark - private method
 +(NSMutableDictionary*)parserServerData:(NSDictionary*)originInfo{
     NSMutableDictionary* dataInfo = [NSMutableDictionary dictionary];
     
@@ -324,84 +423,89 @@
 }
 
 
-//新增或者修改日程   当id存在的时候就是修改
-+(void)asyncUpdateAgendaInfo:(LSAgendaModel*)model
-                successBlock:(void(^)(id data))successBlock
-                failureBlock:(void(^)(id msg, ERequestState state))failureBlock{
-//    kLSBaseURL = @"hangyanBaseUrl";
-    NSString* url = @"lschedule_xinmei/draSchedule.do";
-    NSMutableDictionary* params = [NSMutableDictionary dictionaryWithDictionary:[model getAllPropertyKeyValues]];
-    
-    //修改还是更新
-    if (model.noId) {
-        params[@"type"] = @"update";
-        params[@"id"] = model.noId;
-        [params removeObjectForKey:@"agendaId"];
-    }else{
-        params[@"type"] = @"add";
++(void)localSaveModel:(LSAgendaModel*)model params:(NSDictionary*)params{
+    if (!model.noId) {
+        model.noId = [LSSignUtils md5:[LSSignUtils signParams:params]].lowercaseString;//用签名做id
     }
-    //固定参数
-    params[@"draType"] = @"dra-ajax";
-    params[@"cmd"] = @"addorUpdateSchedule";
-    params[@"isHoliday"] = @(model.holiday);
     
     //创建人ID
     LSUser* user = [LSUser currentUser];
-    params[@"creator"] = [NSString stringWithFormat:@"%@", user.name];
-    params[@"creatorId"] = [NSString stringWithFormat:@"%@", user.userId];
-
-    //开始时间
-    NSDate* startDate = [LSUtils serverDateFromString:model.startTime];
-    if (!startDate) {//如果不是服务器的时间格式，那么用我们自己的时间格式化
-        startDate = [LSUtils dateFormString:model.startTime format:@"yyyy-MM-dd HH:mm:ss"];
-    }
-    params[@"startTime"] = @([startDate timeIntervalSince1970] * 1000);// @"1493946000000";
+    model.creator = user.name;
+    model.creatorId = user.userId;
     
-    //结束时间
-    NSDate* endDate = [LSUtils serverDateFromString:model.endTime];
-    if (!endDate) {//如果不是服务器的时间格式，那么用我们自己的时间格式化
-        endDate = [LSUtils dateFormString:model.endTime format:@"yyyy-MM-dd HH:mm:ss"];
-    }
-    params[@"endTime"] = @([endDate timeIntervalSince1970] * 1000);// @"1493978400000";
-
     if (!model.leaders || model.leaders.length == 0) {
-        params[@"leaders"] = @"";
-        params[@"leadersId"] = @"";
-        params[@"pending"] = @"0";
+        model.pending = 0;
     }else{
-        params[@"pending"] = @"1";
+        model.pending = 1;
     }
     
-
-    [self asyncPostUrl:url param:params successBlock:^(id resObj) {
-        
-        [self parserAndSaveAgenda:resObj[@"schedule"]];
-        
-        if(successBlock)successBlock(resObj);
-    } failureBlock:^(id msg, ERequestState state) {
-        if(failureBlock) failureBlock(msg, state);
-    }];
-}
-
-//删除日程
-+(void)asyncDeleteAgendaById:(NSString*)agendaId
-                successBlock:(void(^)(id data))successBlock
-                failureBlock:(void(^)(id msg, ERequestState state))failureBlock{
-//    kLSBaseURL = @"hangyanBaseUrl";
-    NSString* url = @"lschedule_xinmei/draSchedule.do";
-    NSMutableDictionary* params = [NSMutableDictionary dictionary];
-    params[@"draType"] = @"dra-ajax";
-    params[@"cmd"] = @"deleteSchedule";
-    params[@"id"] = agendaId;
-
-    [self asyncPostUrl:url param:params successBlock:^(id resObj) {
-        if(successBlock)successBlock(resObj);
-    } failureBlock:^(id msg, ERequestState state) {
-        if(failureBlock) failureBlock(msg, state);
-    }];
+    //当开始时间和结束时间不一致的时候，要分成多条noId的日程
+    
+    //当不包含节假日的时候，不去创建节假日的日程
+    
+    
+    [model save];
 }
 
 
 
 
 @end
+
+
+
+
+
+
+
+
+
+
+
+
+
+@implementation LSSignUtils
+
++(NSString*)signParams:(NSDictionary*)params{
+    
+    NSString* orderParamString = @"";
+    
+    NSArray<NSString*>* keys = [params.allKeys sortedArrayUsingComparator:^NSComparisonResult(NSString* obj1, NSString* obj2) {
+        
+        return [obj1 compare:obj2];
+    }];
+    
+    for (NSString* key in keys) {
+        NSInteger index = [keys indexOfObject:key];
+        if (index == keys.count - 1) {
+            orderParamString = [orderParamString stringByAppendingFormat:@"%@=%@", key, params[key]];
+        }else{
+            orderParamString = [orderParamString stringByAppendingFormat:@"%@=%@&", key, params[key]];
+        }
+    }
+    
+    NSLog(@"%@", orderParamString);
+    
+    NSString* md5Str = [LSSignUtils md5:orderParamString.uppercaseString];
+    orderParamString = [orderParamString stringByAppendingFormat:@"&sign=%@", md5Str];
+    
+    return orderParamString.uppercaseString;
+}
+
+
++(NSString *) md5: (NSString *) inputText
+{
+    const char *cStr = [inputText UTF8String];
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+    CC_MD5(cStr, (CC_LONG)strlen(cStr), result);
+    
+    return [NSString stringWithFormat:@"%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X",
+            result[0], result[1], result[2], result[3],
+            result[4], result[5], result[6], result[7],
+            result[8], result[9], result[10], result[11],
+            result[12], result[13], result[14], result[15]
+            ];
+}
+
+@end
+

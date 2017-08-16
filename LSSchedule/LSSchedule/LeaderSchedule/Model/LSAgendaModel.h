@@ -9,6 +9,9 @@
 #import "LSModel.h"
 #import "LSPerson.h"
 
+/** 是否启用本地数据库 */
+extern BOOL kUseLocalData;
+
 /** 当天对应的日程 */
 @interface LSAgendaModel : LSModel
 
@@ -168,5 +171,17 @@
             successBlock:(void(^)(id data))successBlock
             failureBlock:(void(^)(id msg, ERequestState state))failureBlock;
 
+
+@end
+
+
+
+
+
+
+@interface LSSignUtils : NSObject
+
++(NSString*)signParams:(NSDictionary*)params;
++(NSString *) md5: (NSString *) inputText;
 
 @end
